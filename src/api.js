@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { toUnix } from './utils';
-export const BASE_URL = 'http://ws.audioscrobbler.com/2.0/';
-export const LAST_FM_API = 'bf55a5190c3ffaac7d4d96c9ac1ef32a';
-
+import { BASE_URL, LAST_FM_API } from './constants';
 
 export const getUser = async (username) => {
 	return await axios.get(`${BASE_URL}?method=user.getInfo&user=${username}&api_key=${LAST_FM_API}&format=json`).then(res => res.data.user);
