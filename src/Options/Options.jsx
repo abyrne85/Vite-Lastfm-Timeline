@@ -12,7 +12,7 @@ function Options({onSubmit}) {
 	const [username, setUsername] = useState('');
 	const [startYear, setStartYear] = useState('');
 	const [endYear, setEndYear] = useState(`${new Date().getFullYear()}`);
-	const [limit, setLimit] = useState('20');
+	const [limit, setLimit] = useState('10');
 	const [listType, setListType] = useState(LIST_TYPES[0].value);
 	const [cumulative, setCumulative] = useState(CUMULATIVE_OPTIONS[0].value);
 
@@ -52,8 +52,8 @@ function Options({onSubmit}) {
 		<><div className='w-9/12 mx-auto flex justify-center items-end gap-2'>
 			<Input value={username} onChange={setUsername} type='username' label='user name'></Input>
 			{user && <>
-				<Input value={startYear} onChange={setStartYear} type='text' label='start year'></Input>
-				<Input value={endYear} onChange={setEndYear} type='text' label='end year'></Input>
+				<Input value={startYear} onChange={setStartYear} type='number' label='start year'></Input>
+				<Input value={endYear} onChange={setEndYear} type='number' label='end year'></Input>
 				<Input value={limit} onChange={setLimit} type='number' label='limit'></Input>
 				<Dropdown options={LIST_TYPES} label='list type' onOptionSelected={setListType}></Dropdown>
 				<Dropdown options={CUMULATIVE_OPTIONS} label='cumulative' onOptionSelected={setCumulative}></Dropdown>
