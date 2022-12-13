@@ -163,7 +163,7 @@ function Chart(props) {
 					..._generateColors(colorIndex),
 					label: name,
 				});
-				if(colorIndex < colors.length)colorIndex = colorIndex + 1
+				if(colorIndex < colors.length - 1)colorIndex = colorIndex + 1
 				else colorIndex = 0;
 			}
 		}));
