@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getUser } from '../api.js';
 import { fromUnix } from '../utils.js';
-import { LIST_TYPES, CUMULATIVE_OPTIONS } from 'constants.js';
+import { LIST_TYPES, CUMULATIVE_OPTIONS } from '../constants';
 import Button from '../FormElements/Button';
 import Dropdown from '../FormElements/Dropdown';
 import Input from '../FormElements/Input';
