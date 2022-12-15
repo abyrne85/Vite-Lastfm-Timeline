@@ -41,15 +41,15 @@ function Options({onSubmit}) {
 
 	const clear = () => {
 		setUsername('');
-		setStartYear('');
-		setEndYear('');
-		setLimit('');
+		// setStartYear(2015);
+		setEndYear(`${new Date().getFullYear()}`);
+		setLimit(10);
 		setUser(null);
 	};
 
 
 	return (
-		<><div className='w-9/12 mx-auto flex justify-center items-end gap-2'>
+		<><div className='w-9/12 mx-auto flex items-end gap-2 flex-wrap'>
 			<Input value={username} onChange={setUsername} type='username' label='user name'></Input>
 			{user && <>
 				<Input value={startYear} onChange={setStartYear} type='number' label='start year'></Input>

@@ -9,7 +9,6 @@ import {
 	Title,
 	Tooltip,
 	Legend,
-	LineController,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -31,9 +30,7 @@ const options = {
 	},
 	scales: {
 		y: {
-			ticks: {
-				stepSize: 5
-			}
+			display: false,
 		}
 	},
 	hover: {
@@ -50,15 +47,12 @@ const options = {
 	}
 };
 
-
-
 const chartSetDefaults = {
 	data: [],
 	tension: 0.2,
 	pointHoverRadius: 15,
 	hoverBorderWidth: 5,
-	borderWidth: 2,
-	spanGaps: null
+	borderWidth: 2
 };
 
 const colors = [
@@ -131,56 +125,47 @@ const plugins = [{
 }
 ]
 
+const _formatChartDataSets = (props) => {
+	const allArtists = [];
+	let flattened = [];
+	let colorIndex = 0;
+
+	props.chartData.forEach(({ artists }) => artists.forEach(a => flattened.push(a)));
+	props.chartData.forEach(({ artists }) => artists.forEach(({ name }) => {
+		if (!allArtists.find(d => d.label === name)) {
+			allArtists.push({
+				...chartSetDefaults,
+				borderColor: colors[colorIndex],
+				backgroundColor: colors[colorIndex],
+				pointHoverBackgroundColor: colors[colorIndex],
+				label: name,
+			});
+			if(colorIndex < colors.length - 1)colorIndex = colorIndex + 1
+			else colorIndex = 0;
+		}
+	}));
+
+
+	allArtists.forEach(artist => {
+		artist.data = props.years.map(({ year }) => {
+			const flattenedArtist = flattened.find(a => a.year === year && a.name === artist.label);
+			if (props.listType === 'rank') return flattenedArtist ? flattenedArtist.rank : parseInt(props.limit) + 1;
+			if (props.listType === 'playcount') return flattenedArtist && flattenedArtist.plays;
+			return null;
+		}).reverse();
+	});
+	options.scales.y.reverse = props.listType === 'rank' ? true : false;
+
+	return allArtists;
+}
+
+
 function Chart(props) {
 
-	const labels = props.years.map(y => y.year).reverse();
-
 	const [data, setData] = useState({
-		labels,
-		datasets: [],
-	})
-
-	useEffect(() => {
-		_formatChartDataSets(props.chartData);
+		labels : props.years.map(y => y.year).reverse(),
+		datasets: _formatChartDataSets(props),
 	});
-
-	const _generateColors = (colorIndex) => ({
-		borderColor: colors[colorIndex],
-		backgroundColor: colors[colorIndex],
-		pointHoverBackgroundColor: colors[colorIndex],
-	});
-
-	const _formatChartDataSets = (chartData) => {
-		const allArtists = [];
-		let flattened = [];
-		let colorIndex = 0;
-
-		chartData.forEach(({ artists }) => artists.forEach(a => flattened.push(a)));
-		chartData.forEach(({ artists }) => artists.forEach(({ name, rank, plays }) => {
-			if (!allArtists.find(d => d.label === name)) {
-				allArtists.push({
-					...chartSetDefaults,
-					..._generateColors(colorIndex),
-					label: name,
-				});
-				if(colorIndex < colors.length - 1)colorIndex = colorIndex + 1
-				else colorIndex = 0;
-			}
-		}));
-
-		allArtists.forEach(artist => {
-			artist.data = props.years.map(({ year }) => {
-				const flattenedArtist = flattened.find(a => a.year === year && a.name === artist.label);
-				if (props.listType === 'rank') return flattenedArtist ? flattenedArtist.rank : parseInt(props.limit) + 1;
-				if (props.listType === 'playcount') return flattenedArtist && flattenedArtist.plays;
-				return null;
-			}).reverse();
-		});
-		options.scales.y.reverse = props.listType === 'rank' ? true : false;
-
-		data.datasets = allArtists;
-		setData(data);
-	}
 
 	return <>
 	<div id="legend-container" className="flex flex-wrap gap-1 mx-5"></div> 
