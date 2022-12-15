@@ -36,14 +36,16 @@ function Timeline() {
 	}
 
 	return (
-		<>
+		<div className="flex flex-col">
 			<div className="mt-5 mb-5">
 				<Options onSubmit={(data) => fetchLastFMTimeline(data)}></Options>
 			</div>
-			<div className="mt-5 w-100 h-screen">
-				{chartData.length > 0 ? <Chart chartData={chartData} years={years} limit={limit} listType={listType}></Chart> : null}
+			<div className="flex-1">
+				<div className="mt-5 w-[95vw] mx-auto h-100">
+					{chartData.length > 0 ? <Chart chartData={chartData} years={years} limit={limit} listType={listType}></Chart> : null}
+				</div>
 			</div>
-		</>
+		</div>
 	);
 }
 

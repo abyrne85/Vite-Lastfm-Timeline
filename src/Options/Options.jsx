@@ -41,7 +41,6 @@ function Options({onSubmit}) {
 
 	const clear = () => {
 		setUsername('');
-		// setStartYear(2015);
 		setEndYear(`${new Date().getFullYear()}`);
 		setLimit(10);
 		setUser(null);
@@ -59,7 +58,7 @@ function Options({onSubmit}) {
 				<Dropdown options={CUMULATIVE_OPTIONS} label='cumulative' onOptionSelected={setCumulative}></Dropdown>
 			</>}
 			<Button onClick={submit} color="blue" label="submit"></Button>
-			<Button onClick={clear} color="blue" label="clear"></Button>
+			<Button onClick={clear} color="red" label="clear"></Button>
 		</div>
 		</>
 	);

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import Button from '../FormElements/Button';
 
 import {
 	Chart as ChartJS,
@@ -23,11 +24,7 @@ ChartJS.register(
 );
 
 const options = {
-	responsive: true,
-	maintainAspectRatio: false,
-	interaction: {
-		mode: 'nearest'
-	},
+	maintainAspectRatio: true,
 	scales: {
 		y: {
 			display: false,
@@ -47,11 +44,12 @@ const options = {
 	}
 };
 
+
 const chartSetDefaults = {
 	data: [],
 	tension: 0.2,
 	pointHoverRadius: 15,
-	hoverBorderWidth: 5,
+	hoverBorderWidth: 10,
 	borderWidth: 2
 };
 
@@ -91,21 +89,18 @@ const plugins = [{
 			pill.style.alignItems = 'center';
 			pill.style.cursor = 'pointer';
 
-			pill.onclick = () => {
-				chart.setDatasetVisibility(item.datasetIndex, !chart.isDatasetVisible(item.datasetIndex));
-				chart.update();
+			pill.onclick = (e) => {
+				chart._metasets.forEach(({dataset}) => dataset.options.borderWidth = 2);
+				chart._metasets[item.datasetIndex].dataset.options.borderWidth = 20;
+				chart.render();
 			};
 
 			pill.onmouseover = (e) => {
-				chart._metasets[item.datasetIndex].dataset.options.borderWidth = 10;
-				chart._metasets[item.datasetIndex].dataset.options.pointRadius = 20;
-				chart.render();
+				pill.style.opacity ='1';
 			};
 
 			pill.onmouseout = () => {
-				chart._metasets[item.datasetIndex].dataset.options.borderWidth = 3;
-				chart._metasets[item.datasetIndex].dataset.options.pointRadius = 15;
-				chart.render();
+				pill.style.opacity = '0.8';
 			};
 
 
@@ -116,6 +111,7 @@ const plugins = [{
 			pill.style.borderWidth = item.lineWidth + 'px';
 			pill.style.borderRadius = '5px';
 			pill.style.padding = '5px';
+			pill.style.opacity = '0.8'
 
 			const text = document.createTextNode(item.text);
 			pill.appendChild(text);
@@ -159,7 +155,6 @@ const _formatChartDataSets = (props) => {
 	return allArtists;
 }
 
-
 function Chart(props) {
 
 	const [data, setData] = useState({
@@ -167,8 +162,12 @@ function Chart(props) {
 		datasets: _formatChartDataSets(props),
 	});
 
+	const [showLegend, setShowLegend] = useState(true);
+
 	return <>
-	<div id="legend-container" className="flex flex-wrap gap-1 mx-5"></div> 
+	<Button onClick={() => setShowLegend(!showLegend)} color="green" label={showLegend ? 'Hide Artists' : 'Show Artists'}></Button>
+
+	<div id="legend-container" className={`${showLegend ? 'h-100' : 'h-0 overflow-hidden'} flex flex-wrap justify-center gap-1 mt-1`}></div>
 	<Line options={options} data={data} plugins={plugins} />
 	</>;
 }
