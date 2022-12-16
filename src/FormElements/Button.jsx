@@ -1,7 +1,7 @@
 const textColor = {
-  green: 'bg-green-500',
-  blue: 'bg-blue-500',
-  red: 'bg-red-500',
+  green: 'bg-green-500 hover:bg-green-600',
+  blue: 'bg-blue-500 hover:bg-blue-600',
+  red: 'bg-red-500 hover:bg-red-600',
 };
 
 export default function Button(props) {

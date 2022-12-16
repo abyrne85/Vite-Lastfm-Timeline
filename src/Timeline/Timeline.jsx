@@ -41,7 +41,7 @@ function Timeline() {
 				<Options onSubmit={(data) => fetchLastFMTimeline(data)}></Options>
 			</div>
 			<div className="flex-1">
-				<div className="mt-5 w-[95vw] mx-auto h-100">
+				<div className="w-[95vw] mx-auto h-100">
 					{chartData.length > 0 ? <Chart chartData={chartData} years={years} limit={limit} listType={listType}></Chart> : null}
 				</div>
 			</div>
