@@ -48,7 +48,7 @@ const options = {
 const chartSetDefaults = {
 	data: [],
 	tension: 0.2,
-	pointHoverRadius: 15,
+	pointHoverRadius: 10,
 	hoverBorderWidth: 10,
 	borderWidth: 2
 };
@@ -74,14 +74,12 @@ const plugins = [{
 {
 	id: 'htmlLegend',
 	afterUpdate(chart, args, options) {
-		const legendContainer = document.getElementById( options.containerID);
+		const legendContainer = document.getElementById(options.containerID);
 
-		// Remove old legend items
 		while (legendContainer.firstChild) {
 			legendContainer.firstChild.remove();
 		}
 
-		// Reuse the built-in legendItems generator
 		const items = chart.options.plugins.legend.labels.generateLabels(chart);
 
 		items.forEach(item => {
@@ -90,13 +88,13 @@ const plugins = [{
 			pill.style.cursor = 'pointer';
 
 			pill.onclick = (e) => {
-				chart._metasets.forEach(({dataset}) => dataset.options.borderWidth = 2);
-				chart._metasets[item.datasetIndex].dataset.options.borderWidth = 20;
+				chart._metasets.forEach(({ dataset }) => dataset.options.borderWidth = 2);
+				chart._metasets[item.datasetIndex].dataset.options.borderWidth = 15;
 				chart.render();
 			};
 
 			pill.onmouseover = (e) => {
-				pill.style.opacity ='1';
+				pill.style.opacity = '1';
 			};
 
 			pill.onmouseout = () => {
@@ -122,9 +120,10 @@ const plugins = [{
 ]
 
 const _formatChartDataSets = (props) => {
-	const allArtists = [];
+	let allArtists = [];
 	let flattened = [];
 	let colorIndex = 0;
+	const limit = parseInt(props.limit);
 
 	props.chartData.forEach(({ artists }) => artists.forEach(a => flattened.push(a)));
 	props.chartData.forEach(({ artists }) => artists.forEach(({ name }) => {
@@ -136,7 +135,7 @@ const _formatChartDataSets = (props) => {
 				pointHoverBackgroundColor: colors[colorIndex],
 				label: name,
 			});
-			if(colorIndex < colors.length - 1)colorIndex = colorIndex + 1
+			if (colorIndex < colors.length - 1) colorIndex = colorIndex + 1
 			else colorIndex = 0;
 		}
 	}));
@@ -145,30 +144,42 @@ const _formatChartDataSets = (props) => {
 	allArtists.forEach(artist => {
 		artist.data = props.years.map(({ year }) => {
 			const flattenedArtist = flattened.find(a => a.year === year && a.name === artist.label);
-			if (props.listType === 'rank') return flattenedArtist ? flattenedArtist.rank : parseInt(props.limit) + 1;
+			if (props.listType === 'rank') return flattenedArtist ? parseInt(flattenedArtist.rank) : limit + 1;
 			if (props.listType === 'playcount') return flattenedArtist && flattenedArtist.plays;
 			return null;
 		}).reverse();
 	});
 	options.scales.y.reverse = props.listType === 'rank' ? true : false;
-
+	allArtists = allArtists.map((artist) => ({...artist, data : _removeConsecutiveValues(artist.data, limit + 1)}));
 	return allArtists;
 }
+
+function _removeConsecutiveValues(data, bounds) {
+	const indexes = [];
+	data.forEach((d, i) => {
+		if(!data[i - 1] && d === bounds && data[i + 1] === bounds)indexes.push(i);
+		if(data[i - 1] === bounds && d === bounds && data[i + 1] === bounds) indexes.push(i);
+		if(!data[i + 1] && d === bounds)indexes.push(i);
+	});
+	indexes.forEach(d => data[d] = null);
+	return data
+}
+
 
 function Chart(props) {
 
 	const [data, setData] = useState({
-		labels : props.years.map(y => y.year).reverse(),
+		labels: props.years.map(y => y.year).reverse(),
 		datasets: _formatChartDataSets(props),
 	});
 
 	const [showLegend, setShowLegend] = useState(true);
 
 	return <>
-	<Button onClick={() => setShowLegend(!showLegend)} color="green" label={showLegend ? 'Hide Artists' : 'Show Artists'}></Button>
+		<Button onClick={() => setShowLegend(!showLegend)} color="green" label={showLegend ? 'Hide Artists' : 'Show Artists'}></Button>
 
-	<div id="legend-container" className={`${showLegend ? 'h-100' : 'h-0 overflow-hidden'} flex flex-wrap justify-center gap-1 mt-1`}></div>
-	<Line options={options} data={data} plugins={plugins} />
+		<div id="legend-container" className={`${showLegend ? 'h-100' : 'h-0 overflow-hidden'} flex flex-wrap justify-center gap-1 mt-1`}></div>
+		<Line options={options} data={data} plugins={plugins} />
 	</>;
 }
 export default Chart;
