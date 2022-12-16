@@ -128,7 +128,6 @@ const _formatChartDataSets = (props) => {
 	let allArtists = [];
 	let flattened = [];
 	let colorIndex = 0;
-	const limit = parseInt(props.limit);
 
 	props.chartData.forEach(({ artists }) => artists.forEach(a => flattened.push(a)));
 	props.chartData.forEach(({ artists }) => artists.forEach(({ name }) => {
@@ -149,26 +148,13 @@ const _formatChartDataSets = (props) => {
 	allArtists.forEach(artist => {
 		artist.data = props.years.map(({ year }) => {
 			const flattenedArtist = flattened.find(a => a.year === year && a.name === artist.label);
-			// if (props.listType === 'rank') return flattenedArtist ? parseInt(flattenedArtist.rank) : limit + 1;
 			if (props.listType === 'rank') return flattenedArtist && flattenedArtist.rank;
 			if (props.listType === 'playcount') return flattenedArtist && flattenedArtist.plays;
 			return null;
 		}).reverse();
 	});
 	options.scales.y.reverse = props.listType === 'rank' ? true : false;
-	// allArtists = allArtists.map((artist) => ({...artist, data : _removeConsecutiveValues(artist.data, limit + 1)}));
 	return allArtists;
-}
-
-function _removeConsecutiveValues(data, bounds) {
-	const indexes = [];
-	data.forEach((d, i) => {
-		if(!data[i - 1] && d === bounds && data[i + 1] === bounds)indexes.push(i);
-		if(data[i - 1] === bounds && d === bounds && data[i + 1] === bounds) indexes.push(i);
-		if(!data[i + 1] && d === bounds)indexes.push(i);
-	});
-	indexes.forEach(d => data[d] = null);
-	return data
 }
 
 
