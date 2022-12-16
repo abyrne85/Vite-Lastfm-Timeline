@@ -16,7 +16,6 @@ function Options({onSubmit}) {
 	const [listType, setListType] = useState(LIST_TYPES[0].value);
 	const [cumulative, setCumulative] = useState(CUMULATIVE_OPTIONS[0].value);
 
-
 	const [user, setUser] = useState();
 
 	const _fetchUser = async () => {
