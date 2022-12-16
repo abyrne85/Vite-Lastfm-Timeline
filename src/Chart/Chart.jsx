@@ -44,13 +44,13 @@ const options = {
 	}
 };
 
-
 const chartSetDefaults = {
 	data: [],
 	tension: 0.2,
 	pointHoverRadius: 10,
 	hoverBorderWidth: 10,
-	borderWidth: 2
+	borderWidth: 2,
+	pointRadius: 5
 };
 
 const colors = [
@@ -80,7 +80,8 @@ const plugins = [{
 			legendContainer.firstChild.remove();
 		}
 
-		const items = chart.options.plugins.legend.labels.generateLabels(chart);
+		let items = chart.options.plugins.legend.labels.generateLabels(chart);
+		items.sort((a, b) => a.text.localeCompare(b.text))
 
 		items.forEach(item => {
 			const pill = document.createElement('span');
@@ -88,8 +89,12 @@ const plugins = [{
 			pill.style.cursor = 'pointer';
 
 			pill.onclick = (e) => {
-				chart._metasets.forEach(({ dataset }) => dataset.options.borderWidth = 2);
-				chart._metasets[item.datasetIndex].dataset.options.borderWidth = 15;
+				chart._metasets.forEach(({data, dataset}) => {
+					dataset.options.borderWidth = 2;
+					data.forEach(d => d.options.radius = 5);
+				});
+				chart._metasets[item.datasetIndex].dataset.options.borderWidth = 10;	
+				chart._metasets[item.datasetIndex].data.forEach(d => d.options.radius = 20);
 				chart.render();
 			};
 
@@ -98,7 +103,7 @@ const plugins = [{
 			};
 
 			pill.onmouseout = () => {
-				pill.style.opacity = '0.8';
+				pill.style.opacity = '0.7';
 			};
 
 
@@ -109,7 +114,7 @@ const plugins = [{
 			pill.style.borderWidth = item.lineWidth + 'px';
 			pill.style.borderRadius = '5px';
 			pill.style.padding = '5px';
-			pill.style.opacity = '0.8'
+			pill.style.opacity = '0.7'
 
 			const text = document.createTextNode(item.text);
 			pill.appendChild(text);
@@ -144,13 +149,14 @@ const _formatChartDataSets = (props) => {
 	allArtists.forEach(artist => {
 		artist.data = props.years.map(({ year }) => {
 			const flattenedArtist = flattened.find(a => a.year === year && a.name === artist.label);
-			if (props.listType === 'rank') return flattenedArtist ? parseInt(flattenedArtist.rank) : limit + 1;
+			// if (props.listType === 'rank') return flattenedArtist ? parseInt(flattenedArtist.rank) : limit + 1;
+			if (props.listType === 'rank') return flattenedArtist && flattenedArtist.rank;
 			if (props.listType === 'playcount') return flattenedArtist && flattenedArtist.plays;
 			return null;
 		}).reverse();
 	});
 	options.scales.y.reverse = props.listType === 'rank' ? true : false;
-	allArtists = allArtists.map((artist) => ({...artist, data : _removeConsecutiveValues(artist.data, limit + 1)}));
+	// allArtists = allArtists.map((artist) => ({...artist, data : _removeConsecutiveValues(artist.data, limit + 1)}));
 	return allArtists;
 }
 
