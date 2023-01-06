@@ -23,7 +23,6 @@ function Timeline() {
 			year: years[i].year,
 			artists: _formatArtists(data.weeklyartistchart.artist, years[i].year, range)
 		})).reverse();
-		console.log(chartData);
 		setChartData(chartData);
 	}
 
