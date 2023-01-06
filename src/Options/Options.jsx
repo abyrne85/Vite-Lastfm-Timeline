@@ -5,16 +5,18 @@ import { LIST_TYPES, CUMULATIVE_OPTIONS } from '../constants';
 import Button from '../FormElements/Button';
 import Dropdown from '../FormElements/Dropdown';
 import Input from '../FormElements/Input';
-
+import InputRange from 'react-input-range';
 
 function Options({onSubmit}) {
 
 	const [username, setUsername] = useState('');
 	const [startYear, setStartYear] = useState('');
 	const [endYear, setEndYear] = useState(`${new Date().getFullYear()}`);
-	const [limit, setLimit] = useState('10');
+	const [limit, setLimit] = useState(10);
 	const [listType, setListType] = useState(LIST_TYPES[0].value);
 	const [cumulative, setCumulative] = useState(CUMULATIVE_OPTIONS[0].value);
+	const [artistRange, setArtistRange] = useState({min: 1, max: 10});
+
 
 	const [user, setUser] = useState();
 
@@ -33,9 +35,9 @@ function Options({onSubmit}) {
 	const submit = async () => {
 		if (!user) {
 			const user = await _fetchUser();
-			return onSubmit({ username, startYear: _getStartYear(user), endYear, limit, listType,cumulative });
+			return onSubmit({ username, startYear: _getStartYear(user), endYear, limit, listType, cumulative, artistRange });
 		}
-		onSubmit({ username, startYear, endYear, limit, listType, cumulative });
+		onSubmit({ username, startYear, endYear, limit, listType, cumulative, artistRange });
 	};
 
 	const clear = () => {
@@ -43,6 +45,7 @@ function Options({onSubmit}) {
 		setEndYear(`${new Date().getFullYear()}`);
 		setLimit(10);
 		setUser(null);
+		setArtistRange({min:1, max: 10});
 	};
 
 
@@ -59,6 +62,13 @@ function Options({onSubmit}) {
 			<Button onClick={submit} color="blue" label="submit"></Button>
 			<Button onClick={clear} color="red" label="clear"></Button>
 		</div>
+			{user && <div className='w-9/12 mx-auto mt-5'>
+				<InputRange
+          maxValue={limit}
+          minValue={1}
+          value={artistRange}
+					onChange={value => setArtistRange(value)}/>
+			</div>}
 		</>
 	);
 }

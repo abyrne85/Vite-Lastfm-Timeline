@@ -15,24 +15,25 @@ function Timeline() {
 		setLimit(data.limit);
 		setListType(data.listType);
 		setChartData([]);
+		const range = data.artistRange;
 		const years = getYearsArray(data.startYear, data.endYear, data.cumulative);
 		setYears(years);
 		const artists = await getWeeklyArtistChart({ years, username: data.username, limit: data.limit });
 		const chartData = artists.map(({ data }, i) => ({
 			year: years[i].year,
-			artists: _formatArtists(data.weeklyartistchart.artist, years[i].year)
+			artists: _formatArtists(data.weeklyartistchart.artist, years[i].year, range)
 		})).reverse();
+		console.log(chartData);
 		setChartData(chartData);
 	}
 
-
-	const _formatArtists = (artists, year) => {
+	const _formatArtists = (artists, year, range) => {
 		return artists.map(a => ({
 			name: a.name,
 			rank: a['@attr'].rank,
 			plays: a.playcount,
 			year
-		}))
+		})).filter(({rank}) => rank >= range.min && rank <= range.max);
 	}
 
 	return (
